@@ -2,3 +2,4 @@ streamlit
 plotly
 fpdf
 XlsxWriter
+kaleido
