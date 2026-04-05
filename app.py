@@ -23,7 +23,7 @@ st.sidebar.divider()
 # --- HEADER & SLOGAN ---
 st.title("📈 YieldScout™")
 st.subheader("Real Estate ROI & Cap Rate Analyzer")
-st.caption("🔒 Institutional-grade math for real estate wholesalers and buy-and-hold investors.")
+st.caption("🔒 San Diego's premier institutional-grade math engine for property sellers and buy-and-hold investors.")
 
 # --- ZONE 1: INVESTMENT PARAMETERS (Sidebar) ---
 st.sidebar.header("📊 Investment Parameters")
@@ -114,7 +114,7 @@ with tab1:
     st.markdown("**Target Zip Code:**")
     col1, col2 = st.columns([3, 1])
     # The 'label_visibility="collapsed"' pushes the text box down to align with the button perfectly!
-    zip_input = col1.text_input("Target Zip Code:", value="92117", label_visibility="collapsed")
+    zip_input = col1.text_input("Target Zip Code:", value="", placeholder="Enter Zip Code Here...", label_visibility="collapsed")
     
     if col2.button("🔍 Scan Area", use_container_width=True):
         with st.spinner("Compiling investment targets..."):
