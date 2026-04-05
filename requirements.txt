@@ -2,4 +2,4 @@ streamlit
 plotly
 fpdf
 XlsxWriter
-kaleido
+kaleido==0.1.0.post1
