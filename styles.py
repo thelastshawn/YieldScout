@@ -6,7 +6,7 @@ def get_custom_css(is_light_mode):
             .stApp { background-color: #F3F4F6 !important; }
             [data-testid="stSidebar"] { background-color: #FFFFFF !important; border-right: 1px solid #D1D5DB; }
             [data-testid="metric-container"] {
-                background-color: #FFFFFF !important; 
+                background-color: #D3D3D3 !important; 
                 border: 1px solid #10B981; border-left: 5px solid #10B981; 
                 padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
             }
