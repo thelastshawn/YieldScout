@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import pandas as pd
 from styles import get_custom_css
 
 st.set_page_config(page_title="YieldScout™ | Underwriting Engine", layout="wide")
@@ -13,7 +14,7 @@ st.sidebar.divider()
 # --- HEADER & SLOGAN ---
 st.title("📈 YieldScout™")
 st.subheader("Nationwide Deal Underwriting & Seller Net Profit Calculator")
-st.caption("🔒 Institutional-grade math for property sellers and real estate investors.")
+st.caption("🔒 San Diego's premier institutional-grade math engine for property sellers and buy-and-hold investors.")
 
 # --- TABS ---
 tab1, tab2 = st.tabs(["💰 Seller Net Profit Calculator", "📈 Rental ROI Analyzer"])
@@ -48,11 +49,42 @@ with tab1:
     c3.metric("Mortgage Payoff", f"-${mortgage_payoff:,.0f}")
     c4.metric("Estimated Net Profit", f"${net_profit:,.0f}", delta="Take-Home Cash", delta_color="normal")
     
+    # --- CHART & EXPORT ROW ---
+    st.divider()
+    chart_col, export_col = st.columns([2, 1])
+    
+    with chart_col:
+        st.markdown("**Gross Sale Breakdown**")
+        # Prevent negative values in pie chart if underwater on mortgage
+        plot_profit = net_profit if net_profit > 0 else 0 
+        fig1 = px.pie(
+            names=["Net Profit", "Mortgage Payoff", "Commissions", "Closing Costs"],
+            values=[plot_profit, mortgage_payoff, commission_cost, seller_closing_costs],
+            hole=0.5,
+            color_discrete_sequence=['#10B981', '#374151', '#4B5563', '#6B7280']
+        )
+        fig1.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", margin=dict(t=0, b=0, l=0, r=0))
+        st.plotly_chart(fig1, use_container_width=True)
+        
+    with export_col:
+        st.markdown("**Generate Report**")
+        seller_df = pd.DataFrame({
+            "Category": ["Expected Sale Price", "Mortgage Payoff", "Agent Commissions", "Closing Costs", "ESTIMATED NET PROFIT"],
+            "Amount ($)": [sale_price, f"-{mortgage_payoff}", f"-{commission_cost}", f"-{seller_closing_costs}", net_profit]
+        })
+        csv_seller = seller_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Seller Report (.csv)",
+            data=csv_seller,
+            file_name="YieldScout_Seller_Report.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
 with tab2:
     st.markdown("### 🏢 Underwrite an Investment Deal")
     st.caption("Calculate Cap Rate, NOI, and Cash-on-Cash Return for a rental property.")
     
-    # Grid layout for inputs
     col_a, col_b, col_c = st.columns(3)
     
     with col_a:
@@ -99,8 +131,6 @@ with tab2:
     cash_on_cash = (annual_cash_flow / total_cash_invested) * 100 if total_cash_invested > 0 else 0
     
     st.divider()
-    
-    # DISPLAY METRICS
     st.markdown("#### Return Metrics")
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Cap Rate", f"{cap_rate:.2f}%")
@@ -111,3 +141,43 @@ with tab2:
         m4.metric("Monthly Cash Flow", f"${monthly_cash_flow:,.0f}", delta="Positive", delta_color="normal")
     else:
         m4.metric("Monthly Cash Flow", f"-${abs(monthly_cash_flow):,.0f}", delta="Negative", delta_color="inverse")
+
+    # --- CHART & EXPORT ROW ---
+    st.divider()
+    chart_col2, export_col2 = st.columns([2, 1])
+    
+    with chart_col2:
+        st.markdown("**Annual Operating Expenses**")
+        fig2 = px.pie(
+            names=["Property Taxes", "Insurance", "HOA", "Vacancy Loss", "Property Mgmt"],
+            values=[annual_taxes, annual_insurance, annual_hoa, annual_vacancy_loss, annual_management_cost],
+            hole=0.5,
+            color_discrete_sequence=['#10B981', '#374151', '#4B5563', '#6B7280', '#9CA3AF']
+        )
+        fig2.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", margin=dict(t=0, b=0, l=0, r=0))
+        st.plotly_chart(fig2, use_container_width=True)
+        
+    with export_col2:
+        st.markdown("**Generate Underwriting Report**")
+        investor_df = pd.DataFrame({
+            "Metric": [
+                "Purchase Price", "Rehab Budget", "Total Cash Invested", 
+                "Gross Annual Rent", "Net Operating Income (NOI)", 
+                "Annual Debt Service", "Annual Cash Flow", "Monthly Cash Flow", 
+                "Cap Rate (%)", "Cash-on-Cash Return (%)"
+            ],
+            "Value": [
+                purchase_price, rehab_budget, total_cash_invested, 
+                gross_annual_rent, net_operating_income, 
+                annual_debt_service, annual_cash_flow, monthly_cash_flow, 
+                round(cap_rate, 2), round(cash_on_cash, 2)
+            ]
+        })
+        csv_investor = investor_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Pro Forma (.csv)",
+            data=csv_investor,
+            file_name="YieldScout_Investment_Report.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
