@@ -58,7 +58,7 @@ def fetch_property_gallery_api(zip_code, beds, baths, min_sqft, max_hoa):
         "sqft_min": int(min_sqft)
     }
     headers = {
-        "x-rapidapi-key": "ad67d0a64dmsh514c74e7fcdc0a0p13b2fbjsnd81dec4f00d5", # Replace with env variable in production
+        "x-rapidapi-key": st.secrets["RAPIDAPI_KEY"], 
         "x-rapidapi-host": "realty-in-us.p.rapidapi.com",
         "Content-Type": "application/json"
     }
