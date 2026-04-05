@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.express as px
-import pandas as pd
 from styles import get_custom_css
+from reports import build_seller_pdf, build_investor_excel
 
 st.set_page_config(page_title="YieldScout™ | Underwriting Engine", layout="wide")
 
@@ -68,16 +68,13 @@ with tab1:
         
     with export_col:
         st.markdown("**Generate Report**")
-        seller_df = pd.DataFrame({
-            "Category": ["Expected Sale Price", "Mortgage Payoff", "Agent Commissions", "Closing Costs", "ESTIMATED NET PROFIT"],
-            "Amount ($)": [sale_price, f"-{mortgage_payoff}", f"-{commission_cost}", f"-{seller_closing_costs}", net_profit]
-        })
-        csv_seller = seller_df.to_csv(index=False).encode('utf-8')
+        pdf_bytes = build_seller_pdf(sale_price, mortgage_payoff, commission_cost, seller_closing_costs, net_profit)
+        
         st.download_button(
-            label="📥 Download Seller Report (.csv)",
-            data=csv_seller,
-            file_name="YieldScout_Seller_Report.csv",
-            mime="text/csv",
+            label="📄 Download Net Sheet (.pdf)",
+            data=pdf_bytes,
+            file_name="YieldScout_Seller_Net_Sheet.pdf",
+            mime="application/pdf",
             use_container_width=True
         )
 
@@ -158,26 +155,14 @@ with tab2:
         st.plotly_chart(fig2, use_container_width=True)
         
     with export_col2:
-        st.markdown("**Generate Underwriting Report**")
-        investor_df = pd.DataFrame({
-            "Metric": [
-                "Purchase Price", "Rehab Budget", "Total Cash Invested", 
-                "Gross Annual Rent", "Net Operating Income (NOI)", 
-                "Annual Debt Service", "Annual Cash Flow", "Monthly Cash Flow", 
-                "Cap Rate (%)", "Cash-on-Cash Return (%)"
-            ],
-            "Value": [
-                purchase_price, rehab_budget, total_cash_invested, 
-                gross_annual_rent, net_operating_income, 
-                annual_debt_service, annual_cash_flow, monthly_cash_flow, 
-                round(cap_rate, 2), round(cash_on_cash, 2)
-            ]
-        })
-        csv_investor = investor_df.to_csv(index=False).encode('utf-8')
+        st.markdown("**Generate Pro Forma**")
+        # Pass the annual numbers to the Excel engine
+        excel_bytes = build_investor_excel(gross_annual_rent, total_operating_expenses, annual_debt_service)
+        
         st.download_button(
-            label="📥 Download Pro Forma (.csv)",
-            data=csv_investor,
-            file_name="YieldScout_Investment_Report.csv",
-            mime="text/csv",
+            label="📊 Download 10-Year Pro Forma (.xlsx)",
+            data=excel_bytes,
+            file_name="YieldScout_10_Year_ProForma.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
