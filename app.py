@@ -68,8 +68,8 @@ with tab1:
         
     with export_col:
         st.markdown("**Generate Report**")
-        # Pass fig1 into the report engine!
-        pdf_bytes = build_seller_pdf(sale_price, mortgage_payoff, commission_cost, seller_closing_costs, net_profit, fig1)
+        # Removed 'fig1' from the end of this list!
+        pdf_bytes = build_seller_pdf(sale_price, mortgage_payoff, commission_cost, seller_closing_costs, net_profit)
         
         st.download_button(
             label="📄 Download Net Sheet (.pdf)",
